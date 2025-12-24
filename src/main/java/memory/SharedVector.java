@@ -29,14 +29,9 @@ public class SharedVector {
     // READER
     public int length() {
         // TODO: return vector length
-        readLock();
-        try {
-            return vector.length;
-        }
-        finally {
-            readUnlock();
-        }
+        return vector.length;
     }
+
     // READER
     public VectorOrientation getOrientation() {
         // TODO: return vector orientation
@@ -72,57 +67,33 @@ public class SharedVector {
     public void transpose() {
         // TODO: transpose vector
         // changing oriantaion field
-        writeLock();
-        try {
-            if (orientation == VectorOrientation.ROW_MAJOR) {
-                orientation = VectorOrientation.COLUMN_MAJOR;
-            }
-            else {
-                orientation = VectorOrientation.ROW_MAJOR;
-            }
+        if (orientation == VectorOrientation.ROW_MAJOR) {
+            orientation = VectorOrientation.COLUMN_MAJOR;
         }
-        finally {
-            writeUnlock();
+        else {
+            orientation = VectorOrientation.ROW_MAJOR;
         }
+        
     }
     // WRITER
     public void add(SharedVector other) {
         // TODO: add two vectors
         // save the length of this.vector - multiple accesses
         int selfLength = vector.length;
-        // using nesting acquire technic for safety
-        this.writeLock();
-        try {
-            other.readLock();
-            try {
-                // perform a validity check - check if both vectors has the same length
-                if (selfLength != other.length()) {
-                    throw new IllegalArgumentException("We can only sum two vectors in the same length!");
-                }
-                // sum both vectors cells into this.vector - using classes fields directly because both vectors are lock
-                for (int i = 0; i < selfLength; i++) {
-                    this.vector[i] += other.vector[i];
-                }                
+            // perform a validity check - check if both vectors has the same length
+            if (selfLength != other.length()) {
+                throw new IllegalArgumentException("We can only sum two vectors in the same length!");
             }
-            finally {
-                other.readUnlock();
-            }
-        }
-        finally {
-            this.writeUnlock();
-        }
+            // sum both vectors cells into this.vector
+            for (int i = 0; i < selfLength; i++) {
+                this.vector[i] += other.vector[i];
+            }          
     }
     // WRITER
     public void negate() {
         // TODO: negate vector
-        writeLock();
-        try {
-            for (int i = 0; i < vector.length; i++) {
-                vector[i] = vector[i] * (-1);
-            }
-        }
-        finally {
-            writeUnlock();
+        for (int i = 0; i < vector.length; i++) {
+            vector[i] = vector[i] * (-1);
         }
         
     }
@@ -130,27 +101,15 @@ public class SharedVector {
     public double dot(SharedVector other) {
         // TODO: compute dot product (row · column)
         double sum = 0;
-        this.readLock();
-        try {
-            if (this.orientation != VectorOrientation.ROW_MAJOR) {
-                throw new IllegalArgumentException("only row · column is possible");
-            }
-            other.readLock();
-            try {
-                if (other.vector.length != this.vector.length || other.orientation != VectorOrientation.COLUMN_MAJOR) {
-                    throw new IllegalArgumentException("only row · column is possible and both vectors should be in the same length");
-                }
-                for (int i = 0; i < this.vector.length; i++) {
-                    sum += (this.vector[i] * other.vector[i]);
-                }
-            }
-            finally {
-                other.readUnlock();
-            }
+        if (this.orientation != VectorOrientation.ROW_MAJOR) {
+            throw new IllegalArgumentException("only row · column is possible");
         }
-        finally {
-            this.readUnlock();
+        if (other.vector.length != this.vector.length || other.orientation != VectorOrientation.COLUMN_MAJOR) {
+            throw new IllegalArgumentException("only row · column is possible and both vectors should be in the same length");
         }
+        for (int i = 0; i < this.vector.length; i++) {
+            sum += (this.vector[i] * other.vector[i]);
+        }        
         return sum;
     }
 
@@ -210,19 +169,4 @@ public class SharedVector {
 
     
     // auxiliary methods
-    // itentionally not a thread safe method!
-    public void setVector (double[] arr) { // check with others if they did it with a pointer or deep copy
-
-            // 1. Length check: We can't fit a larger/smaller array into the existing space
-            if (this.vector.length != arr.length) {
-                throw new IllegalArgumentException("Vector length mismatch. Cannot perform in-place update.");
-            }
-
-            // 2. Manual Loop: Copy values one by one (Deep Copy)
-            // We overwrite 'this.vector' elements with 'sourceArray' elements.
-            for (int i = 0; i < this.vector.length; i++) {
-                this.vector[i] = arr[i];
-            }
-        
-    }
 }
