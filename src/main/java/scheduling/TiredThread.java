@@ -58,9 +58,11 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
     public void newTask(Runnable task) {
        // TODO
        // check if the thread can get a task right now
-       if (isBusy()) {
-            throw new IllegalStateException("thread is busy!");
-       }
+    //    if (isBusy()) {
+    //         throw new IllegalStateException("thread is busy!"); // deleted by guy - the executer shoud check if thread is busy, not the thread itself
+    //    }
+
+
        // insert the task
        this.handoff.add(task);
     }

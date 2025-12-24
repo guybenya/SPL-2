@@ -22,7 +22,7 @@ public class TiredExecutor {
             // insert it to the minHeap - the thread is idle, we just created it
             idleMinHeap.add(toInsert);
             // ensure the thread is in stand by mode - make the system allocate CPU resources for it
-            toInsert.run();
+            toInsert.start();
         }
     }
 
