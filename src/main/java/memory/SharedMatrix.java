@@ -53,7 +53,39 @@ public class SharedMatrix {
 
     public double[][] readRowMajor() {
         // TODO: return matrix contents as a row-major double[][]
-        return null;
+        double[][] result;
+        if (isEmpty()) {
+            result = new double[0][0];
+            return result;
+        }
+
+        int numOfRows;
+        int numOfCols;
+
+        if (this.getOrientation() == VectorOrientation.COLUMN_MAJOR) { // complicated case
+            numOfCols = this.length();
+            numOfRows = this.vectors[0].length();
+            result = new double[numOfRows][numOfCols];
+            // this loop scan the matrix like it was a row major matrix
+            for (int i = 0; i < numOfRows; i++) {
+                for (int j = 0; j < numOfCols; j++) { 
+                    result[i][j] = vectors[j].get(i);
+                }
+            }
+        }
+
+        else { // matrix is row major
+            numOfRows = this.length();
+            numOfCols = this.vectors[0].length();
+            result = new double[numOfRows][numOfCols];
+            for (int i = 0; i < numOfRows; i++) {
+                for (int j = 0; j < numOfCols; j++) {
+                    result[i][j] = vectors[i].get(j);
+                }
+            }
+
+        }
+        return result;
     }
 
     public SharedVector get(int index) {
@@ -63,12 +95,22 @@ public class SharedMatrix {
 
     public int length() {
         // TODO: return number of stored vectors
-        return 0;
+        // safety check - do not use class method on an empty object
+        if (isEmpty()) {
+            return 0;
+        }
+        else {
+            return vectors.length;
+        }
     }
 
     public VectorOrientation getOrientation() {
         // TODO: return orientation
-        return null;
+        // if matrix is empty or contains only empty vectors
+        if (vectors.length == 0 || vectors[0].length() == 0) {
+            return null;
+        }
+        return vectors[0].getOrientation();
     }
 
     private void acquireAllVectorReadLocks(SharedVector[] vecs) {
@@ -111,4 +153,7 @@ public class SharedMatrix {
         }        
     }
     // auxiliary methods
+    private boolean isEmpty() {
+        return (vectors.length == 0 || vectors[0].length() == 0);
+    }
 }

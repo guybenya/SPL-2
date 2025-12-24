@@ -188,19 +188,24 @@ public class SharedVector {
         double[] newVector = new double[matCols];
 
         // we need the condition in order to technically iterate the columns
+        // every cell in the new vector will be - (old vector * matching column in the matrix)
+
         if (binaryOriantaion == 0) { // matrix is col major
             for (int i = 0; i < newVector.length; i++) {
-                for (int j = 0; j < matRows; j++) {
-                    newVector[i] = newVector[i] + (vector[j] * matrix.get(i).vector[j]);
-                }
+                newVector[i] = this.dot(matrix.get(i));
             }
         }
         else { // matrix is row major
-
+            for (int i = 0; i < newVector.length; i++) {
+                for (int j = 0; j < matRows; j++) {
+                    newVector[i] += this.vector[j] * matrix.get(j).vector[i];
+                }
+            }
         }
-        
 
-
+        // save the result in the share vector
+        this.vector = newVector;
+    
     }
 
     
