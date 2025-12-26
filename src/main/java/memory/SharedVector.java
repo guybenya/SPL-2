@@ -80,14 +80,14 @@ public class SharedVector {
         // TODO: add two vectors
         // save the length of this.vector - multiple accesses
         int selfLength = vector.length;
-            // perform a validity check - check if both vectors has the same length
-            if (selfLength != other.length()) {
-                throw new IllegalArgumentException("We can only sum two vectors in the same length!");
-            }
-            // sum both vectors cells into this.vector
-            for (int i = 0; i < selfLength; i++) {
-                this.vector[i] += other.vector[i];
-            }          
+        // perform a validity check - check if both vectors has the same length
+        if (selfLength != other.length()) {
+            throw new IllegalArgumentException("We can only sum two vectors in the same length!");
+        }
+        // sum both vectors cells into this.vector
+        for (int i = 0; i < selfLength; i++) {
+            this.vector[i] += other.vector[i];
+        }          
     }
     // WRITER
     public void negate() {

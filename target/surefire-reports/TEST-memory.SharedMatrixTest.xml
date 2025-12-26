@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="memory.SharedMatrixTest" time="0.059" tests="25" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="memory.SharedMatrixTest" time="0.044" tests="25" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="25"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IL"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251224172126959_3.jar /Users/guybenyaakov/Skeleton/target/surefire 2025-12-24T17-21-26_929-jvmRun1 surefire-20251224172126959_1tmp surefire_0-20251224172126959_2tmp"/>
+    <property name="sun.java.command" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251226152523152_3.jar /Users/guybenyaakov/Skeleton/target/surefire 2025-12-26T15-25-23_114-jvmRun1 surefire-20251226152523152_1tmp surefire_0-20251226152523152_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/guybenyaakov/Skeleton/target/test-classes:/Users/guybenyaakov/Skeleton/target/classes:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.2/junit-jupiter-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.2/junit-jupiter-api-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/guybenyaakov/.m2/repository/org/junit/platform/junit-platform-commons/1.10.2/junit-platform-commons-1.10.2.jar:/Users/guybenyaakov/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.2/junit-jupiter-params-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.2/junit-jupiter-engine-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/platform/junit-platform-engine/1.10.2/junit-platform-engine-1.10.2.jar:/Users/guybenyaakov/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.1/jackson-databind-2.17.1.jar:/Users/guybenyaakov/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.17.1/jackson-annotations-2.17.1.jar:/Users/guybenyaakov/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.1/jackson-core-2.17.1.jar:"/>
@@ -29,7 +29,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251224172126959_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251226152523152_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="25.0.1+8-LTS"/>
@@ -59,29 +59,29 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="69.0"/>
   </properties>
-  <testcase name="test15_GetVectorIndexOutOfBoundsNegative" classname="memory.SharedMatrixTest" time="0.007"/>
-  <testcase name="test12_ReadFromEmptyMatrix" classname="memory.SharedMatrixTest" time="0.0"/>
-  <testcase name="test23_LargeMatrixLoadAndRead" classname="memory.SharedMatrixTest" time="0.027"/>
+  <testcase name="test15_GetVectorIndexOutOfBoundsNegative" classname="memory.SharedMatrixTest" time="0.008"/>
+  <testcase name="test12_ReadFromEmptyMatrix" classname="memory.SharedMatrixTest" time="0.001"/>
+  <testcase name="test23_LargeMatrixLoadAndRead" classname="memory.SharedMatrixTest" time="0.014"/>
   <testcase name="test3_LoadRowMajorValid" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test22_SwitchingOrientations" classname="memory.SharedMatrixTest" time="0.0"/>
-  <testcase name="test5_LoadRowMajorEmptyArray" classname="memory.SharedMatrixTest" time="0.001"/>
-  <testcase name="test20_SingleColumnLoadedAsColumnMajor" classname="memory.SharedMatrixTest" time="0.0"/>
-  <testcase name="test10_ReadRowMajorFromRowMajorStorage" classname="memory.SharedMatrixTest" time="0.001"/>
-  <testcase name="test11_ReadRowMajorFromColumnMajorStorage" classname="memory.SharedMatrixTest" time="0.0"/>
-  <testcase name="test8_LoadColumnMajorNullInput" classname="memory.SharedMatrixTest" time="0.001"/>
+  <testcase name="test5_LoadRowMajorEmptyArray" classname="memory.SharedMatrixTest" time="0.0"/>
+  <testcase name="test20_SingleColumnLoadedAsColumnMajor" classname="memory.SharedMatrixTest" time="0.001"/>
+  <testcase name="test10_ReadRowMajorFromRowMajorStorage" classname="memory.SharedMatrixTest" time="0.0"/>
+  <testcase name="test11_ReadRowMajorFromColumnMajorStorage" classname="memory.SharedMatrixTest" time="0.001"/>
+  <testcase name="test8_LoadColumnMajorNullInput" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test17_SingleElementMatrix" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test13_GetVectorValidIndex" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test6_LoadRowMajorEmptySubArray" classname="memory.SharedMatrixTest" time="0.0"/>
-  <testcase name="test19_SingleColumnMatrix" classname="memory.SharedMatrixTest" time="0.001"/>
+  <testcase name="test19_SingleColumnMatrix" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test4_LoadRowMajorNullInput" classname="memory.SharedMatrixTest" time="0.0"/>
-  <testcase name="test1_NewMatrixIsEmpty" classname="memory.SharedMatrixTest" time="0.001"/>
+  <testcase name="test1_NewMatrixIsEmpty" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test14_GetVectorIndexOutOfBoundsHigh" classname="memory.SharedMatrixTest" time="0.0"/>
-  <testcase name="test21_ReloadingMatrixUpdatesData" classname="memory.SharedMatrixTest" time="0.0"/>
+  <testcase name="test21_ReloadingMatrixUpdatesData" classname="memory.SharedMatrixTest" time="0.001"/>
   <testcase name="test2_ConstructorWithValidData" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test24_LargeMatrixTransposeRead" classname="memory.SharedMatrixTest" time="0.004"/>
   <testcase name="test7_LoadColumnMajorValid" classname="memory.SharedMatrixTest" time="0.001"/>
-  <testcase name="test9_LoadColumnMajorEmpty" classname="memory.SharedMatrixTest" time="0.001"/>
-  <testcase name="test18_SingleRowMatrix" classname="memory.SharedMatrixTest" time="0.0"/>
+  <testcase name="test9_LoadColumnMajorEmpty" classname="memory.SharedMatrixTest" time="0.0"/>
+  <testcase name="test18_SingleRowMatrix" classname="memory.SharedMatrixTest" time="0.001"/>
   <testcase name="test25_DataEncapsulationCheck" classname="memory.SharedMatrixTest" time="0.0"/>
   <testcase name="test16_GetOrientationEmpty" classname="memory.SharedMatrixTest" time="0.0"/>
 </testsuite>
