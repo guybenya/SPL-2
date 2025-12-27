@@ -26,23 +26,23 @@ public class TiredExecutor {
         }
     }
 
-    public void submit(Runnable task) {
-        // TODO
-        // increment the amount of working threads
+public void submit(Runnable task) {
+        // Increment the count of currently executing tasks
         this.inFlight.incrementAndGet();
 
         try {
-            TiredThread w1 = this.idleMinHeap.take(); // choose the least fatigue thread from the heap - build in blocking function - boolean codition is not needed,
+            // Retrieve the least fatigued idle thread (blocks if none are available)
+            TiredThread w1 = this.idleMinHeap.take();
 
-            // create a wrapper for the task - in order to maintain the fields correctly
+            // Create a wrapper to ensure the worker is returned to the heap after execution
             Runnable wrapper = () -> {
                 try {
-                    task.run(); // run the given task
+                    task.run(); // Execute the actual task
                 }
                 finally {
-                    this.idleMinHeap.add(w1); // return the worker back to the heap after finishing the task
+                    this.idleMinHeap.add(w1); // Return the worker to the idle pool
 
-                    // check if all threads finished their tasks and notify if they are
+                    // Decrement task count and notify if all tasks are complete
                     if (this.inFlight.decrementAndGet() == 0) {
                         synchronized (this) {
                             this.notifyAll();
@@ -51,13 +51,18 @@ public class TiredExecutor {
                 }
             };
 
-            w1.newTask(wrapper); // assign the task to thread - wrapper make sure the fields are updating
+            w1.newTask(wrapper); // Assign the wrapped task to the worker
 
         } 
         catch (Exception e) {
-            // handle exception
-            this.inFlight.decrementAndGet(); // decrease back the number of working threads
-            Thread.currentThread().interrupt(); // notify the calling thread that an interrupt occurred
+            // --- Added logging to reveal the actual error causing test failures ---
+            System.err.println("Failed to submit task: " + e.getMessage());
+            e.printStackTrace();
+            // --------------------------------------------------------------------
+
+            // Restore state on failure (decrement count since task wasn't submitted)
+            this.inFlight.decrementAndGet(); 
+            Thread.currentThread().interrupt(); 
         }
     }
 
@@ -83,6 +88,7 @@ public class TiredExecutor {
     public void shutdown() throws InterruptedException {
         // TODO
         // use the shut down function in TiredThread class for each worker
+        // ---maybe add a if for null case
         for(TiredThread t : workers){
             t.shutdown();
         }

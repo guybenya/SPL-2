@@ -50,21 +50,21 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
         return timeIdle.get();
     }
 
-    /**
+/**
      * Assign a task to this worker.
-     * This method is non-blocking: if the worker is not ready to accept a task,
-     * it throws IllegalStateException.
+     * Uses a blocking put to ensure the task is accepted and the worker is not lost.
      */
     public void newTask(Runnable task) {
-       // TODO
-       // check if the thread can get a task right now
-    //    if (isBusy()) {
-    //         throw new IllegalStateException("thread is busy!"); // deleted by guy - the executer shoud check if thread is busy, not the thread itself
-    //    }
-
-
-       // insert the task
-       this.handoff.add(task);
+        try {
+            // put() waits until there is space, ensuring the worker is never "lost"
+            // due to a momentary race condition.
+            this.handoff.put(task); 
+        } catch (InterruptedException e) {
+            // Restore the interrupt status
+            Thread.currentThread().interrupt();
+            // Wrap the checked exception in a RuntimeException so we don't break the signature
+            throw new RuntimeException("Worker " + id + " was interrupted while accepting a task", e);
+        }
     }
 
     /**
@@ -76,47 +76,60 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
        // indicate the thread: finish your task and do not wait for a new one
        this.alive.set(false);
        // insert the special task to the queue - deal correctly with a busy and not busy thread
-       this.handoff.add(POISON_PILL);
+       this.handoff.offer(POISON_PILL);
     }
 
-    @Override
+@Override
     public void run() {
-       // TODO
-       // as long as the thread is alive try to assign it a task
-       try {
-            // using "while" instead of "if" due to the "try-catch" mechanizem
-            while (alive.get() == true) {
-                // take the task from the queue
+        try {
+            // Loop as long as the thread is kept alive
+            while (alive.get()) {
+                // 1. Wait for a task (blocking operation)
                 Runnable task = handoff.take();
-                // check if the task if the poison pill and stop running if it is
+
+                // 2. Check for Poison Pill (Shutdown signal)
                 if (task == POISON_PILL) {
                     return;
                 }
-                // calcultae the idle duration
+
+                // 3. Measure idle duration before starting work
                 long now = System.nanoTime();
                 long idleDuration = now - idleStartTime.get();
                 timeIdle.addAndGet(idleDuration);
 
-                // change the "busy" flag and measure the actual work time
+                // 4. Mark as busy and start measuring work time
                 busy.set(true);
                 long startingTime = System.nanoTime();
 
-                // run the given task
-                task.run();
+                // --- CRITICAL CHANGE START ---
+                // We wrap the task execution in a try-catch block.
+                // This ensures that if the task throws an exception, the worker thread
+                // does NOT die and can continue to process the next tasks in the queue.
+                try {
+                    task.run();
+                } catch (Throwable t) {
+                    System.err.println("Worker " + id + " failed to execute task: " + t.getMessage());
+                }
+                // --- CRITICAL CHANGE END ---
+
+                // 5. Update work metrics
                 long workDuration = System.nanoTime() - startingTime;
                 timeUsed.addAndGet(workDuration);
 
-                // prepare the thread to the next loop
+                // 6. Reset state for the next loop
                 busy.set(false);
                 idleStartTime.set(System.nanoTime());
-
-
             }
-        
-       } catch (Exception e) {
-        // TODO: handle exception
-        this.alive.set(false); // thread is not alive in this case
-       }
+
+        } catch (InterruptedException e) {
+            // Handle interruption (usually happens during shutdown if thread is waiting in take())
+            this.alive.set(false);
+            Thread.currentThread().interrupt(); // Restore interrupt status
+        } catch (Exception e) {
+            // Handle unexpected crashes that break the loop
+            this.alive.set(false);
+            System.err.println("Worker " + id + " encountered a fatal error and terminated: " + e.getMessage());
+        }
     }
 
     @Override

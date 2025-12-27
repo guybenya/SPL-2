@@ -37,6 +37,7 @@ public class Main {
         //adds it to the relevant output file 
         System.out.println(engine.getWorkerReport());
         OutputWriter.write(result.getMatrix(),outputPath);
+        engine.shutdown(); // inserted by guy
       } catch(Exception e){
         e.printStackTrace();
         //This is the second use of write which is for errors.

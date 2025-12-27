@@ -97,5 +97,19 @@ public class ComputationNode {
         return matrix;
     }
 
+    // Helper Method
+    // This method iterates through the tree nodes and fixes them top to bottom 
+    // (post order) so that the tree will be organized cor
+    //public void recursiveAssociativeNesting() {
+    // recursive method to get to the children and balance them to make the
+    // tree with each node of an operand have the relevant amount of children
+   // if (children != null) {
+      //  for (ComputationNode child : children) {
+      //      child.recursiveAssociativeNesting();
+       // }
+    //}
+    // after reaching all children fix the current node (recursively goes throug the tree)
+    //this.associativeNesting();
+    //}
 
-}
+} 

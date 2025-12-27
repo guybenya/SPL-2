@@ -284,4 +284,8 @@ public List<Runnable> createAddTasks() {
     private boolean oneAtLeastIsEmpty() {
         return (leftMatrix.isEmpty() || rightMatrix.isEmpty());
     }
+    // enable shutting down the program from the main thread
+    public void shutdown() throws InterruptedException {
+        executor.shutdown();
+    }
 }
