@@ -19,24 +19,33 @@ public class LinearAlgebraEngine {
 
     public ComputationNode run(ComputationNode computationRoot) {
         // TODO: resolve computation tree step by step until final matrix is produced
+
+        // make sure tree nodes are nested in a left-associative manner
+        computationRoot.associativeNesting();
+
         // base case
         if (computationRoot.getNodeType() == ComputationNodeType.MATRIX) {
             return computationRoot;
         }
+        List<ComputationNode> children = computationRoot.getChildren(); 
         // step
         // binary operands
-        else if (computationRoot.getNodeType() == ComputationNodeType.MULTIPLY || computationRoot.getNodeType() == ComputationNodeType.ADD) {
+        if (computationRoot.getNodeType() == ComputationNodeType.MULTIPLY || computationRoot.getNodeType() == ComputationNodeType.ADD) {
             // call the method on both left and right children
-            run(computationRoot.getChildren().get(0));
-            run(computationRoot.getChildren().get(1));
-            loadAndCompute(computationRoot);
+            run(children.get(0));
+            run(children.get(1));
         }
         // unary operands
-        else {
+        else if (computationRoot.getNodeType() == ComputationNodeType.TRANSPOSE || computationRoot.getNodeType() == ComputationNodeType.NEGATE) {
             // call the method on the left child only - there is no right child
-            run(computationRoot.getChildren().get(0));
-            loadAndCompute(computationRoot);
+            run(children.get(0));
         }
+        else {
+            throw new IllegalArgumentException("undefined operand");
+        }
+        // load and compute ensures that the main thread waits until all the tasks are complited
+        loadAndCompute(computationRoot);
+
         double[][] resultMatrix = this.leftMatrix.readRowMajor();
         computationRoot.resolve(resultMatrix);
 
@@ -235,7 +244,7 @@ public List<Runnable> createAddTasks() {
 
     public String getWorkerReport() {
         // TODO: return summary of worker activity
-        return null;
+        return executor.getWorkerReport();
     }
     // auxilairy methods
     private boolean sameStructure() {
