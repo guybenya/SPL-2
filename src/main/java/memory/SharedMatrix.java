@@ -153,7 +153,7 @@ public class SharedMatrix {
         }        
     }
     // auxiliary methods
-    private boolean isEmpty() {
-        return (vectors.length == 0 || vectors[0].length() == 0);
+    public boolean isEmpty() {
+        return (vectors == null || vectors.length == 0 || vectors[0].length() == 0);
     }
 }

@@ -19,35 +19,106 @@ public class LinearAlgebraEngine {
 
     public ComputationNode run(ComputationNode computationRoot) {
         // TODO: resolve computation tree step by step until final matrix is produced
-        return null;
+        // base case
+        if (computationRoot.getNodeType() == ComputationNodeType.MATRIX) {
+            return computationRoot;
+        }
+        // step
+        // binary operands
+        else if (computationRoot.getNodeType() == ComputationNodeType.MULTIPLY || computationRoot.getNodeType() == ComputationNodeType.ADD) {
+            // call the method on both left and right children
+            run(computationRoot.getChildren().get(0));
+            run(computationRoot.getChildren().get(1));
+            loadAndCompute(computationRoot);
+        }
+        // unary operands
+        else {
+            // call the method on the left child only - there is no right child
+            run(computationRoot.getChildren().get(0));
+            loadAndCompute(computationRoot);
+        }
+        double[][] resultMatrix = this.leftMatrix.readRowMajor();
+        computationRoot.resolve(resultMatrix);
+
+        return computationRoot;
     }
 
+    // this method gets a ready to compute node
     public void loadAndCompute(ComputationNode node) {
         // TODO: load operand matrices
         // TODO: create compute tasks & submit tasks to executor
         ComputationNodeType type = node.getNodeType();
-        
+
+        // addition - binary operation
+        if (type == ComputationNodeType.ADD) {
+            // load left and right matrices as row-major metrices
+            this.leftMatrix.loadRowMajor(node.getChildren().get(0).getMatrix());
+            this.rightMatrix.loadRowMajor(node.getChildren().get(1).getMatrix());
+
+            // checking dimensions
+            if (oneAtLeastIsEmpty()) {
+                throw new IllegalArgumentException("cannot perform addition if one of the matrices is empty");
+            }
+
+            if (!sameStructure()) {
+                throw new IllegalArgumentException("cannot perform addition unless both matrices has the same structure");
+            }
+
+            // load add tasks directly to the executer 
+            executor.submitAll(createAddTasks()); 
+        }
+
+        // multiplication - binary operation
+        else if (type == ComputationNodeType.MULTIPLY) {
+            // load left as a row-major and right as a column-major
+            this.leftMatrix.loadRowMajor(node.getChildren().get(0).getMatrix());
+            this.rightMatrix.loadColumnMajor(node.getChildren().get(1).getMatrix());  
+            
+            // check dimensions
+            if (oneAtLeastIsEmpty()) {
+                throw new IllegalArgumentException("cannot multiply an empty matrix");
+            }
+
+            int leftCols = leftMatrix.get(0).length();
+            int rightRows = rightMatrix.get(0).length();
+
+            if (leftCols != rightRows) {
+                throw new IllegalArgumentException("dimensions mismatch - leftCols must be equal to rightRows");
+            }
+            // load multiply tasks directly to the executer
+            executor.submitAll(createMultiplyTasks());
+
+        }
+        // negation - unary operation
+        else if (type == ComputationNodeType.NEGATE) {
+            // load left matrix
+            this.leftMatrix.loadRowMajor(node.getChildren().get(0).getMatrix());
+            
+            if (leftMatrix.isEmpty()) {
+                throw new IllegalArgumentException("cannot negate an empty matrix");
+            }
+            // load negation tasks directly to the executer
+            executor.submitAll(createNegateTasks());
+        }
+
+        // transpose - unary operation
+        else if (type == ComputationNodeType.TRANSPOSE) { 
+            this.leftMatrix.loadRowMajor(node.getChildren().get(0).getMatrix());
+
+            if (leftMatrix.isEmpty()) {
+                throw new IllegalArgumentException("cannot transpose an empty matrix");
+            }
+            // load transpose tasks directly to the executer
+            executor.submitAll(createTransposeTasks());
+
+        }
+        else { // if somehow the node type is matrix
+            throw new IllegalArgumentException("Unsupported operation type: " + type);
+        } 
     }
 
 public List<Runnable> createAddTasks() {
     // TODO: return tasks that perform row-wise addition
-    // 1. Handle edge cases (empty matrices)
-    if (leftMatrix.length() == 0 || rightMatrix.length() == 0) {
-        if (leftMatrix.length() != rightMatrix.length()) {
-            throw new IllegalArgumentException("Matrix dimension mismatch (empty vs non-empty)");
-        }
-        return new java.util.ArrayList<>();
-    }
-
-    // 2. Validate orientation compatibility
-    if (leftMatrix.getOrientation() != rightMatrix.getOrientation()) {
-        throw new IllegalStateException("Matrices must have the same orientation");
-    }
-
-    // 3. Validate dimension (height) compatibility
-    if (leftMatrix.length() != rightMatrix.length()) {
-        throw new IllegalArgumentException("Matrix dimensions mismatch: Heights do not match.");
-    }
 
     // Create the task list using the fully qualified name (avoiding extra imports)
     List<Runnable> tasks = new java.util.ArrayList<>(leftMatrix.length());
@@ -79,50 +150,47 @@ public List<Runnable> createAddTasks() {
     return tasks;
 }
 
-public List<Runnable> createMultiplyTasks() {
-    // TODO: return tasks that perform row × matrix multiplication
-    List<Runnable> tasks = new java.util.ArrayList<>();
-    int rows = leftMatrix.length();
+    public List<Runnable> createMultiplyTasks() {
+        // TODO: return tasks that perform row × matrix multiplication
+        List<Runnable> tasks = new java.util.ArrayList<>(leftMatrix.length());
+        int rows = leftMatrix.length();
 
-    for (int i = 0; i < rows; i++) {
-        final int rowIndex = i;
-        tasks.add(() -> {
-            SharedVector leftVector = leftMatrix.get(rowIndex);
-            
-            // 1. Acquire write lock for the row we are updating in leftMatrix
-            leftVector.writeLock();
-            try {
-                // 2. Acquire read locks for all vectors in the right matrix
-                // (We iterate manually because acquireAllVectorReadLocks is private)
-                int rightLen = rightMatrix.length();
-                for (int j = 0; j < rightLen; j++) {
-                    rightMatrix.get(j).readLock();
-                }
-
+        for (int i = 0; i < rows; i++) {
+            final int rowIndex = i;
+            tasks.add(() -> {
+                SharedVector leftVector = leftMatrix.get(rowIndex);
+                
+                // Acquire write lock for the row we are updating in leftMatrix
+                leftVector.writeLock();
                 try {
-                    // 3. Perform the multiplication (updates leftVector in-place)
-                    leftVector.vecMatMul(rightMatrix);
-                } finally {
-                    // 4. Release read locks
+                    int rightLen = rightMatrix.length();
+                    
+                    // Acquire read locks for all vectors in the right matrix
+                    // We iterate manually because acquireAllVectorReadLocks is private
                     for (int j = 0; j < rightLen; j++) {
-                        rightMatrix.get(j).readUnlock();
+                        rightMatrix.get(j).readLock();
                     }
+
+                    try {
+                        // Perform the multiplication (updates leftVector in-place)
+                        leftVector.vecMatMul(rightMatrix);
+                    } finally {
+                        // Release read locks for all vectors in the right matrix
+                        for (int j = 0; j < rightLen; j++) {
+                            rightMatrix.get(j).readUnlock();
+                        }
+                    }
+                } finally {
+                    // Release write lock for the left matrix row
+                    leftVector.writeUnlock();
                 }
-            } finally {
-                // 5. Release write lock
-                leftVector.writeUnlock();
-            }
-        });
+            });
+        }
+        return tasks;
     }
-    return tasks;
-}
 
     public List<Runnable> createNegateTasks() {
         // TODO: return tasks that negate rows
-
-        if (leftMatrix.length() == 0) {
-            return new java.util.ArrayList<>();
-        }
 
         List<Runnable> tasks = new java.util.ArrayList<>(leftMatrix.length());
         int length = leftMatrix.length();
@@ -145,9 +213,7 @@ public List<Runnable> createMultiplyTasks() {
 
     public List<Runnable> createTransposeTasks() {
         // TODO: return tasks that transpose rows
-        if (leftMatrix.length() == 0) {
-            return new java.util.ArrayList<>();
-        }
+
         List<Runnable> tasks = new java.util.ArrayList<>(leftMatrix.length());
         int length = leftMatrix.length();
         
@@ -171,34 +237,42 @@ public List<Runnable> createMultiplyTasks() {
         // TODO: return summary of worker activity
         return null;
     }
-    // auxilairy method
-    private boolean dimentionCheck() {
+    // auxilairy methods
+    private boolean sameStructure() {
+        // 1. Safety check: Handle empty matrices first
+        if (oneAtLeastIsEmpty()) {
+            // Both must be empty to be considered "same structure"
+            return leftMatrix.length() == 0 && rightMatrix.length() == 0;
+        }
+
         int leftNumOfRows;
         int leftNumOfCols;
         int rightNumOfRows;
         int rightNumOfCols;
         
+        // measure sizes for left matrix
         if (leftMatrix.getOrientation() == VectorOrientation.ROW_MAJOR) {
             leftNumOfRows = leftMatrix.length();
             leftNumOfCols = leftMatrix.get(0).length();
-        }
-        else {
+        } else {
             leftNumOfCols = leftMatrix.length();
             leftNumOfRows = leftMatrix.get(0).length();
         }
 
+        // measure sizes for right matrix
         if (rightMatrix.getOrientation() == VectorOrientation.ROW_MAJOR) {
             rightNumOfRows = rightMatrix.length();
             rightNumOfCols = rightMatrix.get(0).length();
-        }
-        else {
+        } else {
             rightNumOfCols = rightMatrix.length();
             rightNumOfRows = rightMatrix.get(0).length();
         }
-        if (leftNumOfRows != rightNumOfRows || leftNumOfCols != rightNumOfCols) {
-            return false;
-        }
-        return true;
-        
+
+        // check sizes
+        return (leftNumOfRows == rightNumOfRows && leftNumOfCols == rightNumOfCols);
+    }
+    // isEmpty for binary operands
+    private boolean oneAtLeastIsEmpty() {
+        return (leftMatrix.isEmpty() || rightMatrix.isEmpty());
     }
 }
