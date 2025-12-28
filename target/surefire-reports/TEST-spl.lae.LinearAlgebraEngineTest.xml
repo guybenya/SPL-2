@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="scheduling.TiredExecutorTest" time="0.319" tests="9" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="spl.lae.LinearAlgebraEngineTest" time="0.031" tests="12" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="25"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -7,15 +7,15 @@
     <property name="java.vm.vendor" value="Eclipse Adoptium"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="user.timezone" value="Asia/Jerusalem"/>
     <property name="os.name" value="Mac OS X"/>
     <property name="java.vm.specification.version" value="25"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IL"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251228121700851_3.jar /Users/guybenyaakov/Skeleton/target/surefire 2025-12-28T12-17-00_820-jvmRun1 surefire-20251228121700851_1tmp surefire_0-20251228121700851_2tmp"/>
+    <property name="sun.java.command" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251228121458887_3.jar /Users/guybenyaakov/Skeleton/target/surefire 2025-12-28T12-14-58_854-jvmRun1 surefire-20251228121458887_1tmp surefire_0-20251228121458887_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
-    <property name="test" value="TiredExecutorTest"/>
     <property name="surefire.test.class.path" value="/Users/guybenyaakov/Skeleton/target/test-classes:/Users/guybenyaakov/Skeleton/target/classes:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.2/junit-jupiter-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.2/junit-jupiter-api-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/guybenyaakov/.m2/repository/org/junit/platform/junit-platform-commons/1.10.2/junit-platform-commons-1.10.2.jar:/Users/guybenyaakov/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.2/junit-jupiter-params-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.2/junit-jupiter-engine-5.10.2.jar:/Users/guybenyaakov/.m2/repository/org/junit/platform/junit-platform-engine/1.10.2/junit-platform-engine-1.10.2.jar:/Users/guybenyaakov/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.1/jackson-databind-2.17.1.jar:/Users/guybenyaakov/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.17.1/jackson-annotations-2.17.1.jar:/Users/guybenyaakov/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.1/jackson-core-2.17.1.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="/Users/guybenyaakov"/>
@@ -30,7 +30,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251228121700851_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/guybenyaakov/Skeleton/target/surefire/surefirebooter-20251228121458887_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="25.0.1+8-LTS"/>
@@ -60,34 +60,19 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="69.0"/>
   </properties>
-  <testcase name="testFatigueValueCorrectness" classname="scheduling.TiredExecutorTest" time="0.177"/>
-  <testcase name="testEmptyShutdown" classname="scheduling.TiredExecutorTest" time="0.002"/>
-  <testcase name="testPoolSizeOneSerialization" classname="scheduling.TiredExecutorTest" time="0.064"/>
-  <testcase name="testBasicExecution" classname="scheduling.TiredExecutorTest" time="0.004"/>
-  <testcase name="testLargeWorkloadStress" classname="scheduling.TiredExecutorTest" time="0.037"/>
-  <testcase name="testFatigueFairnessDistribution" classname="scheduling.TiredExecutorTest" time="0.004"/>
-  <testcase name="testExceptionIsolation" classname="scheduling.TiredExecutorTest" time="0.001">
-    <system-err><![CDATA[Worker 0 failed to execute task: Intentional Failure
-]]></system-err>
-  </testcase>
-  <testcase name="testSubmitAllHelper" classname="scheduling.TiredExecutorTest" time="0.003"/>
-  <testcase name="testFullFatigueReport" classname="scheduling.TiredExecutorTest" time="0.014">
-    <system-out><![CDATA[
-========================================
-       FULL FATIGUE REPORT              
-========================================
-Worker 0 | Fatigue: 4284393.57
-Worker 1 | Fatigue: 6797639.87
-Worker 2 | Fatigue: 4962902.65
-Worker 3 | Fatigue: 6890341.45
-----------------------------------------
-Average Fatigue:    5733819.38
-----------------------------------------
-1. Total Variance:  5164405109207.65  (Original metric)
-2. Std Deviation:   1136266.38
-3. Fairness (CV):   0.19817  (Best for comparison)
-========================================
-
+  <testcase name="testSimpleMultiplication" classname="spl.lae.LinearAlgebraEngineTest" time="0.002"/>
+  <testcase name="testForDeadlockWithTimeout" classname="spl.lae.LinearAlgebraEngineTest" time="0.009"/>
+  <testcase name="testSimpleAddition" classname="spl.lae.LinearAlgebraEngineTest" time="0.001"/>
+  <testcase name="testSimpleTranspose" classname="spl.lae.LinearAlgebraEngineTest" time="0.0"/>
+  <testcase name="testEmptyMatrixInput" classname="spl.lae.LinearAlgebraEngineTest" time="0.0"/>
+  <testcase name="testSimpleNegate" classname="spl.lae.LinearAlgebraEngineTest" time="0.001"/>
+  <testcase name="testAssociativeAddition" classname="spl.lae.LinearAlgebraEngineTest" time="0.001"/>
+  <testcase name="testComplexExpression" classname="spl.lae.LinearAlgebraEngineTest" time="0.0"/>
+  <testcase name="testAddDimensionMismatch" classname="spl.lae.LinearAlgebraEngineTest" time="0.001"/>
+  <testcase name="testLargeMatrixMultiplication" classname="spl.lae.LinearAlgebraEngineTest" time="0.011">
+    <system-out><![CDATA[Time for 100x100 multiplication: 5ms
 ]]></system-out>
   </testcase>
+  <testcase name="testMultiplyDimensionMismatch" classname="spl.lae.LinearAlgebraEngineTest" time="0.0"/>
+  <testcase name="testSingleValueMatrix" classname="spl.lae.LinearAlgebraEngineTest" time="0.001"/>
 </testsuite>

@@ -11,8 +11,12 @@ public class SharedVector {
     private ReadWriteLock lock = new java.util.concurrent.locks.ReentrantReadWriteLock();
 
     public SharedVector(double[] vector, VectorOrientation orientation) {
-        // TODO: store vector data and its orientation
-        this.vector = vector;
+        // (Deep Copy)
+        if (vector != null) {
+            this.vector = vector.clone(); 
+        } else {
+            this.vector = null;
+        }
         this.orientation = orientation;
     }
     // READER

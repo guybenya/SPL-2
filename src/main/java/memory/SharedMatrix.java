@@ -36,20 +36,33 @@ public class SharedMatrix {
 
     public void loadColumnMajor(double[][] matrix) {
         // TODO: replace internal data with new column-major matrix
-        // input validity check
+        // input validity check - (Kept your original check)
         if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) {
             throw new IllegalArgumentException("Cannot load an empty or null matrix.");
         }
+
+        // --- FIX: Extract dimensions to handle transposition ---
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+
         // initializing a new vectors array
-        SharedVector[] newVectors = new SharedVector[matrix.length];        
+        // --- FIX: Array size must be 'cols' (number of columns), not 'rows' ---
+        SharedVector[] newVectors = new SharedVector[cols];
 
         // iterating the input matrix and using the constructor to create a new matrix
-        for (int i = 0; i < matrix.length; i++) {
-            newVectors[i] = new SharedVector(matrix[i], VectorOrientation.COLUMN_MAJOR); 
+        // --- FIX: Implement Transpose logic (read column j from all rows) ---
+        for (int j = 0; j < cols; j++) {
+            double[] columnData = new double[rows]; // Allocate space for one column
+            for (int i = 0; i < rows; i++) {
+                columnData[i] = matrix[i][j]; // Copy value from matrix[row][col]
+            }
+            // Create SharedVector with the transposed data
+            newVectors[j] = new SharedVector(columnData, VectorOrientation.COLUMN_MAJOR);
+            }
+
+            // adjust the field
+            this.vectors = newVectors;
         }
-        // adjust the field
-        this.vectors = newVectors;                        
-    }
 
     public double[][] readRowMajor() {
         // TODO: return matrix contents as a row-major double[][]
