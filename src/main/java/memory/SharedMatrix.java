@@ -8,12 +8,18 @@ public class SharedMatrix {
         // TODO: initialize empty matrix
         this.vectors = new SharedVector[0];
     }
-
+    
     public SharedMatrix(double[][] matrix) {
         // TODO: construct matrix as row-major SharedVectors
+        
+        // CHANGED: Added null check to prevent NullPointerException and throw IllegalArgumentException instead
+        if (matrix == null) {
+            throw new IllegalArgumentException("Matrix cannot be null");
+        }
+
         this.vectors = new SharedVector[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
-            this.vectors[i] = new SharedVector(matrix[i],VectorOrientation.ROW_MAJOR);
+            this.vectors[i] = new SharedVector(matrix[i], VectorOrientation.ROW_MAJOR);
         }
     }
 
@@ -59,7 +65,6 @@ public class SharedMatrix {
             // Create SharedVector with the transposed data
             newVectors[j] = new SharedVector(columnData, VectorOrientation.COLUMN_MAJOR);
             }
-
             // adjust the field
             this.vectors = newVectors;
         }
@@ -132,7 +137,7 @@ public class SharedMatrix {
             return;
         }        
         for (int i = 0; i < vecs.length; i++) {
-            vectors[i].readLock();
+            vecs[i].readLock();
         }
     }
 
@@ -142,7 +147,7 @@ public class SharedMatrix {
             return;
         }        
         for (int i = 0; i < vecs.length; i++) {
-            vectors[i].readUnlock();
+            vecs[i].readUnlock();
         }        
     }
 
@@ -152,7 +157,7 @@ public class SharedMatrix {
             return;
         }        
         for (int i = 0; i < vecs.length; i++) {
-            vectors[i].writeLock();
+            vecs[i].writeLock();
         }        
     }
 
@@ -162,7 +167,7 @@ public class SharedMatrix {
             return;
         }        
         for (int i = 0; i < vecs.length; i++) {
-            vectors[i].writeUnlock();
+            vecs[i].writeUnlock();
         }        
     }
     // auxiliary methods

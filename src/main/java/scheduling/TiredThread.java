@@ -143,4 +143,5 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
 
         // (-1) if this is less tired then other, 0 if equally tired and (-1) else. 
     }
+
 }

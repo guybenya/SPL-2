@@ -11,12 +11,11 @@ public class SharedVector {
     private ReadWriteLock lock = new java.util.concurrent.locks.ReentrantReadWriteLock();
 
     public SharedVector(double[] vector, VectorOrientation orientation) {
-        // (Deep Copy)
-        if (vector != null) {
-            this.vector = vector.clone(); 
-        } else {
-            this.vector = null;
+        // Fix 1: Constructor must throw exception if input is null -- fixed by guy
+        if (vector == null) {
+            throw new IllegalArgumentException("Vector data cannot be null");
         }
+        this.vector = vector.clone();
         this.orientation = orientation;
     }
     // READER
@@ -81,18 +80,22 @@ public class SharedVector {
     }
     // WRITER
     public void add(SharedVector other) {
-        // TODO: add two vectors
-        // save the length of this.vector - multiple accesses
+        // Fix 2: Check for orientation mismatch
+        if (this.orientation != other.getOrientation()) {
+            throw new IllegalArgumentException("Cannot add vectors with different orientations");
+        }
+        
         int selfLength = vector.length;
-        // perform a validity check - check if both vectors has the same length
         if (selfLength != other.length()) {
             throw new IllegalArgumentException("We can only sum two vectors in the same length!");
         }
-        // sum both vectors cells into this.vector
+
+        // Assuming other is safe or we hold its lock, but for this assignment logic:
         for (int i = 0; i < selfLength; i++) {
-            this.vector[i] += other.vector[i];
-        }          
+            this.vector[i] += other.get(i); // Using get() is safer for concurrent access
+        }
     }
+    
     // WRITER
     public void negate() {
         // TODO: negate vector
