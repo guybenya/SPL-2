@@ -17,39 +17,63 @@ public class LinearAlgebraEngine {
         this.executor = new TiredExecutor(numThreads);
     }
 
-    public ComputationNode run(ComputationNode computationRoot) {
-        // TODO: resolve computation tree step by step until final matrix is produced
+    // public ComputationNode run(ComputationNode computationRoot) {
+    //     // TODO: resolve computation tree step by step until final matrix is produced
 
-        // make sure tree nodes are nested in a left-associative manner
-        computationRoot.associativeNesting();
+    //     // make sure tree nodes are nested in a left-associative manner
+    //     computationRoot.associativeNesting();
 
-        // base case
-        if (computationRoot.getNodeType() == ComputationNodeType.MATRIX) {
-            return computationRoot;
-        }
-        List<ComputationNode> children = computationRoot.getChildren(); 
-        // step
-        // binary operands
-        if (computationRoot.getNodeType() == ComputationNodeType.MULTIPLY || computationRoot.getNodeType() == ComputationNodeType.ADD) {
-            // call the method on both left and right children
-            run(children.get(0));
-            run(children.get(1));
-        }
-        // unary operands
-        else if (computationRoot.getNodeType() == ComputationNodeType.TRANSPOSE || computationRoot.getNodeType() == ComputationNodeType.NEGATE) {
-            // call the method on the left child only - there is no right child
-            run(children.get(0));
-        }
-        else {
-            throw new IllegalArgumentException("undefined operand");
-        }
-        // load and compute ensures that the main thread waits until all the tasks are complited
-        loadAndCompute(computationRoot);
+    //     // base case
+    //     if (computationRoot.getNodeType() == ComputationNodeType.MATRIX) {
+    //         return computationRoot;
+    //     }
+    //     List<ComputationNode> children = computationRoot.getChildren(); 
+    //     // step
+    //     // binary operands
+    //     if (computationRoot.getNodeType() == ComputationNodeType.MULTIPLY || computationRoot.getNodeType() == ComputationNodeType.ADD) {
+    //         // call the method on both left and right children
+    //         run(children.get(0));
+    //         run(children.get(1));
+    //     }
+    //     // unary operands
+    //     else if (computationRoot.getNodeType() == ComputationNodeType.TRANSPOSE || computationRoot.getNodeType() == ComputationNodeType.NEGATE) {
+    //         // call the method on the left child only - there is no right child
+    //         run(children.get(0));
+    //     }
+    //     else {
+    //         throw new IllegalArgumentException("undefined operand");
+    //     }
+    //     // load and compute ensures that the main thread waits until all the tasks are complited
+    //     loadAndCompute(computationRoot);
 
-        double[][] resultMatrix = this.leftMatrix.readRowMajor();
-        computationRoot.resolve(resultMatrix);
+    //     double[][] resultMatrix = this.leftMatrix.readRowMajor();
+    //     computationRoot.resolve(resultMatrix);
 
         
+    //     return computationRoot;
+    // }
+
+
+    // edited by sagi - new run function 
+    public ComputationNode run(ComputationNode computationRoot) {
+        // first of all - making sure the tree is nested
+        computationRoot.associativeNesting();
+
+        while (computationRoot.getNodeType() != ComputationNodeType.MATRIX) {
+            // finding resolvable node
+            ComputationNode resolvable = computationRoot.findResolvable();
+            
+            if (resolvable == null) break; // if resolveable is null handles the situation and breaks the calculation loop
+
+            loadAndCompute(resolvable);
+        }
+
+        try {
+            this.executor.shutdown();
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted run");
+        }
+
         return computationRoot;
     }
 
@@ -125,6 +149,10 @@ public class LinearAlgebraEngine {
         else { // if somehow the node type is matrix
             throw new IllegalArgumentException("Unsupported operation type: " + type);
         } 
+        // creating a result matrix to put in the matrix after the calculation ----- added by sagi
+        double[][] result = this.leftMatrix.readRowMajor();
+        
+        node.resolve(result);
     }
 
 public List<Runnable> createAddTasks() {
@@ -281,12 +309,9 @@ public List<Runnable> createAddTasks() {
         // check sizes
         return (leftNumOfRows == rightNumOfRows && leftNumOfCols == rightNumOfCols);
     }
+
     // isEmpty for binary operands
     private boolean oneAtLeastIsEmpty() {
         return (leftMatrix.isEmpty() || rightMatrix.isEmpty());
-    }
-    // enable shutting down the program from the main thread
-    public void shutdown() throws InterruptedException {
-        executor.shutdown();
     }
 }

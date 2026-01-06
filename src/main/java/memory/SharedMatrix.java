@@ -12,7 +12,7 @@ public class SharedMatrix {
     public SharedMatrix(double[][] matrix) {
         // TODO: construct matrix as row-major SharedVectors
         
-        // CHANGED: Added null check to prevent NullPointerException and throw IllegalArgumentException instead
+        // input safety check
         if (matrix == null) {
             throw new IllegalArgumentException("Matrix cannot be null");
         }
@@ -47,22 +47,22 @@ public class SharedMatrix {
             throw new IllegalArgumentException("Cannot load an empty or null matrix.");
         }
 
-        // --- FIX: Extract dimensions to handle transposition ---
+        // extract dimensions to handle transposition
         int rows = matrix.length;
         int cols = matrix[0].length;
 
         // initializing a new vectors array
-        // --- FIX: Array size must be 'cols' (number of columns), not 'rows' ---
+        // array size must be 'cols' (number of columns)
         SharedVector[] newVectors = new SharedVector[cols];
 
         // iterating the input matrix and using the constructor to create a new matrix
-        // --- FIX: Implement Transpose logic (read column j from all rows) ---
+        // Transpose logic (read column j from all rows) ---
         for (int j = 0; j < cols; j++) {
-            double[] columnData = new double[rows]; // Allocate space for one column
+            double[] columnData = new double[rows]; // allocate space for one column
             for (int i = 0; i < rows; i++) {
-                columnData[i] = matrix[i][j]; // Copy value from matrix[row][col]
+                columnData[i] = matrix[i][j]; // copy value from matrix[row][col]
             }
-            // Create SharedVector with the transposed data
+            // create SharedVector with the transposed data
             newVectors[j] = new SharedVector(columnData, VectorOrientation.COLUMN_MAJOR);
             }
             // adjust the field

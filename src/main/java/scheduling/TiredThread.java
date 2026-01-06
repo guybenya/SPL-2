@@ -84,39 +84,38 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
         try {
             // Loop as long as the thread is kept alive
             while (alive.get()) {
-                // 1. Wait for a task (blocking operation)
+                // Wait for a task (blocking operation)
                 Runnable task = handoff.take();
 
-                // 2. Check for Poison Pill (Shutdown signal)
+                // Check for Poison Pill (Shutdown signal)
                 if (task == POISON_PILL) {
                     return;
                 }
 
-                // 3. Measure idle duration before starting work
+                // Measure idle duration before starting work
                 long now = System.nanoTime();
                 long idleDuration = now - idleStartTime.get();
                 timeIdle.addAndGet(idleDuration);
 
-                // 4. Mark as busy and start measuring work time
+                // Mark as busy and start measuring work time
                 busy.set(true);
                 long startingTime = System.nanoTime();
 
-                // --- CRITICAL CHANGE START ---
                 // We wrap the task execution in a try-catch block.
                 // This ensures that if the task throws an exception, the worker thread
                 // does NOT die and can continue to process the next tasks in the queue.
+
                 try {
                     task.run();
                 } catch (Throwable t) {
                     System.err.println("Worker " + id + " failed to execute task: " + t.getMessage());
                 }
-                // --- CRITICAL CHANGE END ---
 
-                // 5. Update work metrics
+                // Update work metrics
                 long workDuration = System.nanoTime() - startingTime;
                 timeUsed.addAndGet(workDuration);
 
-                // 6. Reset state for the next loop
+                // Reset state for the next loop
                 busy.set(false);
                 idleStartTime.set(System.nanoTime());
             }
@@ -139,9 +138,7 @@ public class TiredThread extends Thread implements Comparable<TiredThread> {
 
         return Double.compare(this.getFatigue(), o.getFatigue()); // calling to getFatigue inside this method updates the fatigue value for each thread
                                                                   // the priority queue sorts the threads by this value
-                                                                
-
-        // (-1) if this is less tired then other, 0 if equally tired and (-1) else. 
+                                                                 // (-1) if this is less tired then other, 0 if equally tired and (-1) else. 
     }
 
 }

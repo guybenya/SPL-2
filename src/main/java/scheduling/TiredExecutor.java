@@ -55,7 +55,7 @@ public class TiredExecutor {
 
         } 
         catch (Exception e) {
-            // --- Added logging to reveal the actual error causing test failures ---
+            // --- Added message to reveal the actual error causing test failures ---
             System.err.println("Failed to submit task: " + e.getMessage());
             e.printStackTrace();
             // --------------------------------------------------------------------
@@ -88,7 +88,6 @@ public class TiredExecutor {
     public void shutdown() throws InterruptedException {
         // TODO
         // use the shut down function in TiredThread class for each worker
-        // ---maybe add a if for null case
         for(TiredThread t : workers){
             t.shutdown();
         }
