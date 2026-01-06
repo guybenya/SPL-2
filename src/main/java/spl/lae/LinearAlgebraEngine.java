@@ -49,6 +49,7 @@ public class LinearAlgebraEngine {
         double[][] resultMatrix = this.leftMatrix.readRowMajor();
         computationRoot.resolve(resultMatrix);
 
+        
         return computationRoot;
     }
 
