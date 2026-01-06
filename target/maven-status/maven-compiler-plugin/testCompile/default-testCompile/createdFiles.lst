@@ -1,1 +1,5 @@
+memory/SharedVectorTest.class
 spl/lae/LinearAlgebraEngineTest.class
+memory/SharedMatrixTest.class
+scheduling/TiredExecutorTest.class
+scheduling/TiredThreadTest.class
